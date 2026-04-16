@@ -1,0 +1,2 @@
+# Copy to .dev.vars for local `wrangler dev` (never commit .dev.vars)
+OPENAI_API_KEY=sk-your-key-here

@@ -1,0 +1,8 @@
+name = "prep2meet"
+main = "worker/index.js"
+compatibility_date = "2024-12-01"
+
+# Optional: set OPENAI_API_KEY in dashboard or `wrangler secret put OPENAI_API_KEY`
+# Optional: comma-separated origins for CORS, e.g. https://you.github.io,http://localhost:8080
+# [vars]
+# PUBLIC_ORIGINS = "https://you.github.io,http://localhost:8080"

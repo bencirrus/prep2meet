@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>prep2meet</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <span class="logo">prep2meet</span>
+        <span class="tagline">Pre-call briefing in one pass</span>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="panel input-panel">
+        <label class="field">
+          <span class="label">Company or ticker</span>
+          <input
+            id="query"
+            type="text"
+            placeholder="e.g. Snowflake, CRM, or https://example.com"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </label>
+
+        <details class="settings">
+          <summary>Worker &amp; API</summary>
+          <label class="field">
+            <span class="label">Worker base URL</span>
+            <input
+              id="workerUrl"
+              type="url"
+              placeholder="https://prep2meet.your-subdomain.workers.dev"
+              autocomplete="off"
+            />
+            <span class="hint">Deploy the included Worker and paste its origin here. For local dev use http://127.0.0.1:8787</span>
+          </label>
+          <label class="field">
+            <span class="label">OpenAI API key</span>
+            <input id="apiKey" type="password" placeholder="sk-…" autocomplete="off" />
+            <span class="hint">Optional if the Worker has OPENAI_API_KEY configured. Otherwise sent to your Worker for the OpenAI call only — not stored.</span>
+          </label>
+        </details>
+
+        <button type="button" id="run" class="primary">Generate briefing</button>
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <section id="output" class="panel output hidden" aria-live="polite"></section>
+    </main>
+
+    <footer class="foot">
+      <p>Curated sources only · SEC + site + Wikipedia + news RSS · Summarized with your key</p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
