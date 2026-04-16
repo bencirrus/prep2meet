@@ -96,6 +96,7 @@ async function gatherBriefingPack(rawQuery) {
   /* ── SEC ticker lookup ── */
   const tickers = await loadSecTickers();
   const secMatch = findSecMatch(rawQuery, tickers);
+  let edgarTenK = null;
 
   if (secMatch) {
     meta.classification = "public_us";
@@ -109,12 +110,9 @@ async function gatherBriefingPack(rawQuery) {
     );
     if (sub.entityName) meta.resolvedName = sub.entityName;
 
-    const tenk = pickLatestTenK(sub);
-    if (tenk) {
-      meta.tenKUrl = tenk.url;
-      meta.tenKSource = "sec_edgar";
-      meta.sourcesUsed.push("Latest 10-K primary document via SEC EDGAR (excerpt)");
-    }
+    /* Save the SEC EDGAR 10-K candidate but don't assign yet —
+       we prefer the company's own IR portal if available. */
+    edgarTenK = pickLatestTenK(sub);
 
     if (!websiteHint) {
       websiteHint = await resolveOfficialWebsite(searchQuery, meta.resolvedName);
@@ -165,18 +163,23 @@ async function gatherBriefingPack(rawQuery) {
     if (irHtml) {
       irText = htmlToText(irHtml).slice(0, MAX_HTML_CHARS);
 
-      /* If we don't already have a 10-K from SEC EDGAR, try to find one on
-         the company's own IR portal — this is the preferred path because it
-         avoids SEC EDGAR entirely for the 10-K document. */
-      if (!meta.tenKUrl) {
-        const irTenK = findTenKOnIrPage(irHtml, meta.irUrl);
-        if (irTenK) {
-          meta.tenKUrl = irTenK;
-          meta.tenKSource = "ir_portal";
-          meta.sourcesUsed.push(`10-K / Annual Report found on IR portal: ${irTenK}`);
-        }
+      /* Try to find a 10-K / annual report directly on the company's IR
+         portal — this is the preferred path because it avoids SEC EDGAR
+         entirely for the 10-K document. */
+      const irTenK = findTenKOnIrPage(irHtml, meta.irUrl);
+      if (irTenK) {
+        meta.tenKUrl = irTenK;
+        meta.tenKSource = "ir_portal";
+        meta.sourcesUsed.push(`10-K / Annual Report found on IR portal: ${irTenK}`);
       }
     }
+  }
+
+  /* ── SEC EDGAR fallback for 10-K (only if IR portal didn't find one) ── */
+  if (!meta.tenKUrl && edgarTenK) {
+    meta.tenKUrl = edgarTenK.url;
+    meta.tenKSource = "sec_edgar";
+    meta.sourcesUsed.push("Latest 10-K primary document via SEC EDGAR (excerpt)");
   }
 
   /* ── 10-K text ── */
