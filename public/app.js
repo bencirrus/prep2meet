@@ -1,23 +1,56 @@
 const $ = (id) => document.getElementById(id);
 
-const SESSION_WORKER = "prep2meet_worker_base";
+const STORAGE_API_BASE = "prep2meet_api_base";
 
 function loadDefaults() {
   const params = new URLSearchParams(window.location.search);
-  const fromQuery = params.get("worker");
-  const stored = sessionStorage.getItem(SESSION_WORKER);
-  if (fromQuery) $("workerUrl").value = fromQuery;
-  else if (stored) $("workerUrl").value = stored;
+  const fromQuery = params.get("api") || params.get("worker");
+  const stored = localStorage.getItem(STORAGE_API_BASE);
+
+  if (fromQuery) {
+    $("apiBase").value = fromQuery;
+    localStorage.setItem(STORAGE_API_BASE, fromQuery.replace(/\/$/, ""));
+  } else if (stored) {
+    $("apiBase").value = stored;
+  }
+
+  updateApiHint();
 }
 
-function saveWorkerBase() {
-  const v = $("workerUrl").value.trim();
-  if (v) sessionStorage.setItem(SESSION_WORKER, v.replace(/\/$/, ""));
+function saveApiBase() {
+  const v = $("apiBase").value.trim();
+  if (v) localStorage.setItem(STORAGE_API_BASE, v.replace(/\/$/, ""));
+}
+
+/**
+ * Resolve the API endpoint URL.
+ * - If the user typed a base URL → use it.
+ * - If the page is served from a Vercel deploy (same origin has /api) → same origin.
+ * - Otherwise → require the user to fill it in.
+ */
+function resolveApiBase() {
+  const explicit = ($("apiBase").value || "").trim().replace(/\/$/, "");
+  if (explicit) return explicit;
+  /* Same-origin when hosted on Vercel (the /api routes live next to the static files) */
+  return window.location.origin;
 }
 
 function apiUrl() {
-  const base = $("workerUrl").value.trim().replace(/\/$/, "");
-  return `${base}/api/brief`;
+  return `${resolveApiBase()}/api/brief`;
+}
+
+function updateApiHint() {
+  const el = $("apiHint");
+  if (!el) return;
+  const explicit = ($("apiBase").value || "").trim();
+  if (explicit) {
+    el.textContent = "Using the API base URL you provided.";
+  } else {
+    el.textContent =
+      "Auto-detected: same origin (" +
+      window.location.origin +
+      "). Set a URL here if your API is hosted elsewhere (e.g. on Vercel).";
+  }
 }
 
 function setStatus(msg, isError) {
@@ -98,14 +131,10 @@ function renderBriefing(data, meta) {
 async function runBrief() {
   const query = $("query").value.trim();
   const key = $("apiKey").value.trim();
-  saveWorkerBase();
+  saveApiBase();
 
   if (!query) {
     setStatus("Enter a company name or ticker.", true);
-    return;
-  }
-  if (!$("workerUrl").value.trim()) {
-    setStatus("Set your Worker base URL (see README).", true);
     return;
   }
 
@@ -128,7 +157,7 @@ async function runBrief() {
     renderBriefing(payload, payload.meta || {});
     $("output").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
-    setStatus(e.message || "Network error — check Worker URL and CORS.", true);
+    setStatus(e.message || "Network error — check API base URL and CORS.", true);
     $("output").classList.add("hidden");
   } finally {
     $("run").disabled = false;
@@ -139,5 +168,8 @@ $("run").addEventListener("click", runBrief);
 $("query").addEventListener("keydown", (e) => {
   if (e.key === "Enter") runBrief();
 });
+
+const apiBaseEl = $("apiBase");
+if (apiBaseEl) apiBaseEl.addEventListener("input", updateApiHint);
 
 loadDefaults();

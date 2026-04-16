@@ -28,21 +28,21 @@
         </label>
 
         <details class="settings">
-          <summary>Worker &amp; API</summary>
+          <summary>API &amp; settings</summary>
           <label class="field">
-            <span class="label">Worker base URL</span>
+            <span class="label">API base URL</span>
             <input
-              id="workerUrl"
+              id="apiBase"
               type="url"
-              placeholder="https://prep2meet.your-subdomain.workers.dev"
+              placeholder="https://your-app.vercel.app"
               autocomplete="off"
             />
-            <span class="hint">Deploy the included Worker and paste its origin here. For local dev use http://127.0.0.1:8787</span>
+            <span id="apiHint" class="hint">Leave blank when the UI and API are on the same origin (Vercel). Set this to your Vercel deployment URL when hosting the UI separately (e.g. GitHub Pages).</span>
           </label>
           <label class="field">
             <span class="label">OpenAI API key</span>
             <input id="apiKey" type="password" placeholder="sk-…" autocomplete="off" />
-            <span class="hint">Optional if the Worker has OPENAI_API_KEY configured. Otherwise sent to your Worker for the OpenAI call only — not stored.</span>
+            <span class="hint">Optional if OPENAI_API_KEY is set on the server. Otherwise sent to the API for the OpenAI call only — not stored.</span>
           </label>
         </details>
 
@@ -54,7 +54,7 @@
     </main>
 
     <footer class="foot">
-      <p>Curated sources only · SEC + site + Wikipedia + news RSS · Summarized with your key</p>
+      <p>Curated sources only · SEC + IR portal + Wikipedia + news RSS · Summarized with your key</p>
     </footer>
 
     <script src="./app.js"></script>

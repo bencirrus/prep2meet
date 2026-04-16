@@ -4,8 +4,9 @@
   "private": true,
   "description": "Instant pre-meeting briefings for SaaS sellers",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "npx vercel dev",
+    "dev:worker": "wrangler dev",
+    "deploy:worker": "wrangler deploy",
     "pages:dev": "npx serve public -p 8080"
   },
   "devDependencies": {
