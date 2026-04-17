@@ -185,7 +185,7 @@ async function gatherBriefingPack(rawQuery) {
   /* ── 10-K text ── */
   let tenKText = "";
   if (meta.tenKUrl) {
-    const kHtml = await fetchText(meta.tenKUrl, SEC_UA, MAX_10K_CHARS * 2);
+    const kHtml = await fetchText(meta.tenKUrl, meta.tenKSource === "sec_edgar" ? SEC_UA : DEFAULT_UA, MAX_10K_CHARS * 2);
     if (kHtml) {
       tenKText = htmlToText(kHtml).slice(0, MAX_10K_CHARS);
     } else {
