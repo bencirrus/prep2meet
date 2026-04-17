@@ -1,0 +1,9 @@
+{
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/brief", "destination": "/api/brief" },
+    { "source": "/api/health", "destination": "/api/health" }
+  ],
+  "headers": []
+}
