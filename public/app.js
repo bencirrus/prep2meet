@@ -20,6 +20,7 @@ function loadDefaults() {
 function saveApiBase() {
   const v = $("apiBase").value.trim();
   if (v) localStorage.setItem(STORAGE_API_BASE, v.replace(/\/$/, ""));
+  else localStorage.removeItem(STORAGE_API_BASE);
 }
 
 /**
